@@ -85,12 +85,18 @@ function App() {
         />
       ) : (
         <div className="min-h-screen bg-gray-50">
-          <Header onCartClick={handleCartClick} onNavClick={handleNavClick} activeCategory={null} />
-          <div className="pt-[186px]">
+          <Header 
+            onCartClick={handleCartClick} 
+            onNavClick={handleNavClick} 
+            activeCategory={null}
+            onProductClick={handleProductClick}
+            onGoHome={handleBackToHome}
+          />
+          <div className="pt-[140px] sm:pt-[160px] md:pt-[186px]">
             <PromotionalBanner />
             <FeaturesBar />
             <StorageBanner />
-            <Collections />
+            <Collections onNavClick={handleNavClick} />
             <PromotionalSection />
             <WhyChooseUs />
             <FeaturedBlogs />

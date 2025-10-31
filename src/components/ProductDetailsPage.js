@@ -1,9 +1,12 @@
 import React, { useState } from 'react';
+import { useDispatch } from 'react-redux';
+import { addToCart } from '../store/cartSlice';
 import Header from './Header';
 import Footer from './Footer';
 import ShoppingCart from './ShoppingCart';
 
 const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeCategory, isCartOpen, onCloseCart, onProductClick }) => {
+  const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedHeadboard, setSelectedHeadboard] = useState('26" Strutted (Included)');
   const [selectedSize, setSelectedSize] = useState('2\'6 Small Single');
@@ -79,29 +82,56 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
   ];
 
   const handleAddToBasket = () => {
-    // Handle add to basket logic
-    console.log('Add to basket');
+    // Validate required fields
+    if (!selectedStorage) {
+      alert('Please select a storage option');
+      return;
+    }
+    if (!selectedFabric) {
+      alert('Please select a fabric choice');
+      return;
+    }
+
+    // Add to cart with all selected options
+    dispatch(addToCart({
+      product,
+      quantity: 1,
+      options: {
+        selectedSize,
+        selectedStorage,
+        selectedFabric,
+        selectedHeadboard,
+      }
+    }));
+
+    // Open cart to show added item
+    onCartClick();
   };
 
   return (
     <div className="min-h-screen bg-white">
       {/* Header */}
-      <Header onCartClick={onCartClick} onNavClick={onNavClick} activeCategory={activeCategory} />
+      <Header 
+        onCartClick={onCartClick} 
+        onNavClick={onNavClick} 
+        activeCategory={activeCategory}
+        onGoHome={onClose}
+      />
 
       {/* Main Content */}
-      <div className="pt-[186px] pb-12">
-        <div className="container mx-auto px-4">
+      <div className="pt-[140px] sm:pt-[160px] md:pt-[186px] pb-8 sm:pb-12">
+        <div className="container mx-auto px-3 sm:px-4">
           {/* Breadcrumbs */}
-          <div className="mb-6 text-sm text-gray-600">
-            <span className="cursor-pointer hover:text-black">Home</span>
+          <div className="mb-4 sm:mb-6 text-xs sm:text-sm text-gray-600 overflow-x-auto">
+            <span className="cursor-pointer hover:text-black whitespace-nowrap">Home</span>
             {' > '}
-            <span className="cursor-pointer hover:text-black">Ottoman Divan Sets</span>
+            <span className="cursor-pointer hover:text-black whitespace-nowrap">Ottoman Divan Sets</span>
             {' > '}
-            <span className="text-black">{product.name}</span>
+            <span className="text-black truncate">{product.name}</span>
           </div>
 
           {/* Product Section */}
-          <div className="grid grid-cols-1 lg:grid-cols-2 gap-8 mb-12">
+          <div className="grid grid-cols-1 lg:grid-cols-2 gap-4 sm:gap-6 md:gap-8 mb-8 sm:mb-12">
             {/* Left - Image Gallery */}
             <div>
               {/* Main Image */}
@@ -131,7 +161,7 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               </div>
 
               {/* Thumbnails */}
-              <div className="grid grid-cols-7 gap-2">
+              <div className="grid grid-cols-4 sm:grid-cols-5 md:grid-cols-7 gap-2">
                 {images.slice(0, 7).map((img, index) => (
                   <button
                     key={index}
@@ -162,18 +192,18 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               )}
 
               {/* Title */}
-              <h1 className="text-3xl md:text-4xl font-bold mb-4 text-gray-900">
+              <h1 className="text-xl sm:text-2xl md:text-3xl lg:text-4xl font-bold mb-3 sm:mb-4 text-gray-900">
                 {product.name}
               </h1>
 
               {/* Price */}
-              <div className="mb-8">
-                <div className="flex items-baseline gap-3">
-                  <span className="text-4xl font-bold text-red-600">
+              <div className="mb-6 sm:mb-8">
+                <div className="flex items-baseline gap-2 sm:gap-3 flex-wrap">
+                  <span className="text-2xl sm:text-3xl md:text-4xl font-bold text-red-600">
                     £{product.price.toFixed(2)}
                   </span>
                   {product.originalPrice && (
-                    <span className="text-2xl text-gray-500 line-through">
+                    <span className="text-lg sm:text-xl md:text-2xl text-gray-500 line-through">
                       £{product.originalPrice.toFixed(2)}
                     </span>
                   )}
@@ -181,12 +211,12 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               </div>
 
               {/* Headboard Height Dropdown */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Headboard Height</label>
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-xs sm:text-sm font-semibold mb-2 text-gray-700">Headboard Height</label>
                 <select 
                   value={selectedHeadboard}
                   onChange={(e) => setSelectedHeadboard(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-gray-500 text-sm sm:text-base"
                 >
                   <option>26" Strutted (Included)</option>
                   <option>28" Strutted</option>
@@ -195,12 +225,12 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               </div>
 
               {/* Bed Size Dropdown */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-gray-700">Bed Size</label>
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-xs sm:text-sm font-semibold mb-2 text-gray-700">Bed Size</label>
                 <select 
                   value={selectedSize}
                   onChange={(e) => setSelectedSize(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-gray-500 text-sm sm:text-base"
                 >
                   <option>2'6 Small Single</option>
                   <option>3'0 Single</option>
@@ -212,14 +242,14 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               </div>
 
               {/* Storage Options */}
-              <div className="mb-6">
-                <label className="block text-sm font-semibold mb-2 text-gray-700">
+              <div className="mb-4 sm:mb-6">
+                <label className="block text-xs sm:text-sm font-semibold mb-2 text-gray-700">
                   Storage Options<span className="text-red-500 ml-1">*</span>
                 </label>
                 <select 
                   value={selectedStorage}
                   onChange={(e) => setSelectedStorage(e.target.value)}
-                  className="w-full px-4 py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-gray-500"
+                  className="w-full px-3 sm:px-4 py-2 sm:py-3 border-2 border-gray-300 rounded-lg outline-none focus:border-gray-500 text-sm sm:text-base"
                 >
                   <option value="">Choose Storage Options</option>
                   <option>Ottoman Storage</option>
@@ -229,11 +259,11 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               </div>
 
               {/* Fabric Choice */}
-              <div className="mb-8">
-                <label className="block text-sm font-semibold mb-3 text-gray-700">
+              <div className="mb-6 sm:mb-8">
+                <label className="block text-sm font-semibold mb-2 sm:mb-3 text-gray-700">
                   Fabric Choice<span className="text-red-500 ml-1">*</span>
                 </label>
-                <div className="grid grid-cols-10 gap-2">
+                <div className="grid grid-cols-5 sm:grid-cols-8 md:grid-cols-10 gap-2">
                   {fabrics.map((color, index) => (
                     <button
                       key={index}
@@ -251,7 +281,7 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
               {/* Add to Basket Button */}
               <button
                 onClick={handleAddToBasket}
-                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 px-8 rounded-lg mb-4 text-lg transition-colors"
+                className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-3 sm:py-4 px-6 sm:px-8 rounded-lg mb-4 text-base sm:text-lg transition-colors"
               >
                 ADD TO BASKET
               </button>
@@ -338,16 +368,15 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
 
           {/* You May Also Like Section */}
           <div className="mb-12 mt-16">
-            <h2 className="text-3xl font-bold mb-8 text-gray-900 text-center">You may also like...</h2>
-            <div className="grid grid-cols-1 md:grid-cols-3 lg:grid-cols-5 gap-6">
+            <h2 className="text-xl sm:text-2xl md:text-3xl font-bold mb-4 sm:mb-6 md:mb-8 text-gray-900 text-center px-4">You may also like...</h2>
+            <div className="grid grid-cols-2 sm:grid-cols-3 lg:grid-cols-5 gap-3 sm:gap-4 md:gap-6">
               {recommendedProducts.map((recProduct) => (
                 <div 
                   key={recProduct.id} 
-                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow cursor-pointer"
-                  onClick={() => onProductClick && onProductClick(recProduct)}
+                  className="bg-white rounded-lg shadow-md overflow-hidden hover:shadow-xl transition-shadow flex flex-col"
                 >
                   {/* Product Image */}
-                  <div className="relative">
+                  <div className="relative cursor-pointer" onClick={() => onProductClick && onProductClick(recProduct)}>
                     <div className="aspect-square overflow-hidden">
                       <img 
                         src={recProduct.image} 
@@ -370,20 +399,37 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
                   </div>
 
                   {/* Product Info */}
-                  <div className="p-4">
-                    <h3 className="font-bold text-sm mb-3 text-gray-900 line-clamp-2 min-h-[40px]">
+                  <div className="p-3 sm:p-4 flex-1 flex flex-col">
+                    <h3 
+                      className="font-bold text-xs sm:text-sm mb-2 sm:mb-3 text-gray-900 line-clamp-2 min-h-[32px] sm:min-h-[40px] cursor-pointer"
+                      onClick={() => onProductClick && onProductClick(recProduct)}
+                    >
                       {recProduct.name}
                     </h3>
-                    <div className="flex items-center gap-2">
-                      <span className="text-xl font-bold text-red-600">
+                    <div className="flex flex-col sm:flex-row sm:items-center gap-1 sm:gap-2 mb-3">
+                      <span className="text-base sm:text-xl font-bold text-red-600">
                         From £{recProduct.price.toFixed(2)}
                       </span>
                       {recProduct.originalPrice && (
-                        <span className="text-gray-500 line-through text-sm">
+                        <span className="text-gray-500 line-through text-xs sm:text-sm">
                           £{recProduct.originalPrice.toFixed(2)}
                         </span>
                       )}
                     </div>
+                    <button
+                      onClick={(e) => {
+                        e.stopPropagation();
+                        dispatch(addToCart({
+                          product: recProduct,
+                          quantity: 1,
+                          options: {}
+                        }));
+                        onCartClick();
+                      }}
+                      className="mt-auto w-full bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-3 sm:px-4 rounded-lg transition-colors text-xs sm:text-sm"
+                    >
+                      Add to Cart
+                    </button>
                   </div>
                 </div>
               ))}

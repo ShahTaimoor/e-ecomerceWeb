@@ -1,11 +1,22 @@
 import React, { useState } from 'react';
+import { useSelector, useDispatch } from 'react-redux';
+import { removeFromCart, updateQuantity } from '../store/cartSlice';
 
 const ShoppingCart = ({ isOpen, onClose }) => {
-  const [quantity, setQuantity] = useState(1);
+  const dispatch = useDispatch();
+  const { items, total, itemCount } = useSelector((state) => state.cart);
   const [discountCode, setDiscountCode] = useState('');
 
-  const handleQuantityChange = (delta) => {
-    setQuantity(Math.max(1, quantity + delta));
+  const handleQuantityChange = (index, delta) => {
+    const currentItem = items[index];
+    if (currentItem) {
+      const newQuantity = Math.max(1, currentItem.quantity + delta);
+      dispatch(updateQuantity({ index, quantity: newQuantity }));
+    }
+  };
+
+  const handleRemoveItem = (index) => {
+    dispatch(removeFromCart(index));
   };
 
   const handleApplyDiscount = () => {
@@ -24,10 +35,10 @@ const ShoppingCart = ({ isOpen, onClose }) => {
       ></div>
 
       {/* Cart Modal */}
-      <div className="relative w-full max-w-md h-full bg-white shadow-2xl overflow-hidden flex flex-col">
+      <div className="relative w-full sm:max-w-md h-full bg-white shadow-2xl overflow-hidden flex flex-col">
         {/* Header - Fixed */}
-        <div className="flex justify-between items-center p-6 border-b flex-shrink-0">
-          <h2 className="text-2xl font-bold text-black">Your Shopping Basket</h2>
+        <div className="flex justify-between items-center p-4 sm:p-6 border-b flex-shrink-0">
+          <h2 className="text-xl sm:text-2xl font-bold text-black">Your Shopping Basket</h2>
           <button
             onClick={onClose}
             className="text-gray-500 hover:text-gray-700 transition-colors"
@@ -40,69 +51,100 @@ const ShoppingCart = ({ isOpen, onClose }) => {
 
         {/* Scrollable Content */}
         <div className="flex-1 overflow-y-auto">
-        {/* Product Item */}
-        <div className="p-6 border-b">
-          <div className="flex gap-4">
-            {/* Product Image */}
-            <div className="w-32 h-32 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
-              <img 
-                src="/images/banners/banner1.jpg" 
-                alt="Hana Ottoman Divan Bed Set"
-                className="w-full h-full object-cover"
-              />
+          {items.length === 0 ? (
+            <div className="flex flex-col items-center justify-center h-full p-8 text-center">
+              <svg className="w-24 h-24 text-gray-300 mb-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M16 11V7a4 4 0 00-8 0v4M5 9h14l1 12H4L5 9z" />
+              </svg>
+              <h3 className="text-xl font-bold text-gray-700 mb-2">Your cart is empty</h3>
+              <p className="text-gray-500 mb-6">Start adding items to your cart</p>
+              <button
+                onClick={onClose}
+                className="bg-green-600 hover:bg-green-700 text-white font-bold px-6 py-2 rounded-lg transition-colors"
+              >
+                Continue Shopping
+              </button>
             </div>
+          ) : (
+            items.map((item, index) => (
+              <div key={index} className="p-4 sm:p-6 border-b">
+                <div className="flex gap-3 sm:gap-4">
+                  {/* Product Image */}
+                  <div className="w-24 h-24 sm:w-32 sm:h-32 bg-gray-200 rounded-lg flex-shrink-0 overflow-hidden">
+                    <img 
+                      src={item.image} 
+                      alt={item.name}
+                      className="w-full h-full object-cover"
+                    />
+                  </div>
 
-            {/* Product Details */}
-            <div className="flex-1">
-              <div className="flex justify-between items-start mb-2">
-                <h3 className="font-bold text-base text-black">Hana Ottoman Divan Bed Set</h3>
-                <button className="text-gray-500 hover:text-gray-700">
-                  <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                    <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
-                  </svg>
-                </button>
-              </div>
+                  {/* Product Details */}
+                  <div className="flex-1 min-w-0">
+                    <div className="flex justify-between items-start mb-2 gap-2">
+                      <h3 className="font-bold text-sm sm:text-base text-black line-clamp-2">{item.name}</h3>
+                      <button 
+                        onClick={() => handleRemoveItem(index)}
+                        className="text-gray-500 hover:text-gray-700 flex-shrink-0 ml-2"
+                        aria-label="Remove item"
+                      >
+                        <svg className="w-5 h-5" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                          <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                      </button>
+                    </div>
 
-              {/* Specifications */}
-              <div className="space-y-1 mb-3 text-sm text-gray-600">
-                <p>Headboard Height: 26" Strutted (Included)</p>
-                <p>Bed Size: 2'6 Small Single</p>
-                <p><strong>Fabric Choice</strong>: Chenille Charcoal</p>
-              </div>
+                    {/* Specifications */}
+                    {item.selectedHeadboard && (
+                      <p className="text-xs sm:text-sm text-gray-600 mb-1">Headboard: {item.selectedHeadboard}</p>
+                    )}
+                    {item.selectedSize && (
+                      <p className="text-xs sm:text-sm text-gray-600 mb-1">Size: {item.selectedSize}</p>
+                    )}
+                    {item.selectedStorage && (
+                      <p className="text-xs sm:text-sm text-gray-600 mb-1">Storage: {item.selectedStorage}</p>
+                    )}
+                    {item.selectedFabric && (
+                      <p className="text-xs sm:text-sm text-gray-600 mb-2">
+                        <strong>Fabric</strong>: <span className="inline-block w-4 h-4 rounded border border-gray-300 align-middle mr-1" style={{ backgroundColor: item.selectedFabric }}></span> Selected
+                      </p>
+                    )}
 
-              {/* Quantity Selector */}
-              <div className="flex items-center justify-between">
-                <div className="flex items-center gap-2">
-                  <button
-                    onClick={() => handleQuantityChange(-1)}
-                    className="w-8 h-8 bg-gray-300 hover:bg-gray-400 text-black rounded flex items-center justify-center transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
-                    </svg>
-                  </button>
-                  <input
-                    type="number"
-                    value={quantity}
-                    readOnly
-                    className="w-12 h-8 text-center border-2 border-gray-300 rounded"
-                  />
-                  <button
-                    onClick={() => handleQuantityChange(1)}
-                    className="w-8 h-8 bg-gray-300 hover:bg-gray-400 text-black rounded flex items-center justify-center transition-colors"
-                  >
-                    <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                      <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
-                    </svg>
-                  </button>
+                    {/* Quantity Selector */}
+                    <div className="flex items-center justify-between gap-2 mt-3">
+                      <div className="flex items-center gap-2">
+                        <button
+                          onClick={() => handleQuantityChange(index, -1)}
+                          className="w-8 h-8 bg-gray-300 hover:bg-gray-400 text-black rounded flex items-center justify-center transition-colors"
+                          aria-label="Decrease quantity"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M20 12H4" />
+                          </svg>
+                        </button>
+                        <span className="w-12 h-8 text-center border-2 border-gray-300 rounded flex items-center justify-center text-sm font-semibold">
+                          {item.quantity}
+                        </span>
+                        <button
+                          onClick={() => handleQuantityChange(index, 1)}
+                          className="w-8 h-8 bg-gray-300 hover:bg-gray-400 text-black rounded flex items-center justify-center transition-colors"
+                          aria-label="Increase quantity"
+                        >
+                          <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 4v16m8-8H4" />
+                          </svg>
+                        </button>
+                      </div>
+
+                      {/* Price */}
+                      <p className="font-bold text-base sm:text-lg text-black">
+                        £{(item.price * item.quantity).toFixed(2)}
+                      </p>
+                    </div>
+                  </div>
                 </div>
-
-                {/* Price */}
-                <p className="font-bold text-lg text-black">£299.95</p>
               </div>
-            </div>
-          </div>
-        </div>
+            ))
+          )}
 
         {/* Delivery Instructions */}
         <div className="p-6 border-b">
@@ -137,19 +179,29 @@ const ShoppingCart = ({ isOpen, onClose }) => {
             <span className="text-gray-600">FREE</span>
           </div>
           <div className="flex justify-between">
-            <span className="text-black font-bold">Subtotal</span>
-            <span className="text-black font-bold text-xl">£299.95</span>
+            <span className="text-black font-bold">Subtotal ({itemCount} {itemCount === 1 ? 'item' : 'items'})</span>
+            <span className="text-black font-bold text-xl">£{total.toFixed(2)}</span>
           </div>
         </div>
 
         {/* Action Buttons */}
-        <div className="p-6 space-y-4">
-          <button className="w-full bg-green-600 hover:bg-green-700 text-white font-bold py-4 rounded-lg transition-colors uppercase text-lg">
+        <div className="p-4 sm:p-6 space-y-4 flex-shrink-0">
+          <button 
+            disabled={items.length === 0}
+            className={`w-full font-bold py-3 sm:py-4 rounded-lg transition-colors uppercase text-base sm:text-lg ${
+              items.length === 0 
+                ? 'bg-gray-400 cursor-not-allowed' 
+                : 'bg-green-600 hover:bg-green-700'
+            } text-white`}
+          >
             CHECKOUT NOW
           </button>
-          <a href="#continue-shopping" className="block text-center text-gray-600 hover:text-gray-800 transition-colors">
+          <button 
+            onClick={onClose}
+            className="block w-full text-center text-gray-600 hover:text-gray-800 transition-colors"
+          >
             Continue shopping &gt;
-          </a>
+          </button>
         </div>
         </div>
       </div>
