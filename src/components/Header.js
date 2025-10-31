@@ -316,7 +316,7 @@ const Header = ({ onCartClick, onNavClick, activeCategory, onProductClick, onSea
 
           {/* Navigation - Desktop */}
           <nav className="hidden sm:flex flex-wrap justify-center items-center gap-1 sm:gap-2 md:gap-4 lg:gap-6 text-[10px] xs:text-xs sm:text-sm font-medium px-1">
-            {categories.map((category) => {
+            {categories.slice(0, 6).map((category) => {
               const categoryMap = {
                 'ottoman-divan-sets': 'divan',
                 'ottoman-bed-frames': 'bedframes',
@@ -339,7 +339,6 @@ const Header = ({ onCartClick, onNavClick, activeCategory, onProductClick, onSea
                 </button>
               );
             })}
-            <a href="#contact" className="px-1 sm:px-2 hover:text-yellow-500 transition-colors whitespace-nowrap">Contact Us</a>
           </nav>
         </div>
       </header>
@@ -364,7 +363,7 @@ const Header = ({ onCartClick, onNavClick, activeCategory, onProductClick, onSea
             {/* Menu Items */}
             <div className="flex-1 overflow-y-auto">
               <div className="py-2">
-                {categories.map((category) => {
+                {categories.slice(0, 6).map((category) => {
                   const categoryMap = {
                     'ottoman-divan-sets': 'divan',
                     'ottoman-bed-frames': 'bedframes',

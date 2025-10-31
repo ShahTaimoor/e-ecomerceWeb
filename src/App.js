@@ -92,7 +92,7 @@ function App() {
             onProductClick={handleProductClick}
             onGoHome={handleBackToHome}
           />
-          <div className="pt-[140px] sm:pt-[160px] md:pt-[186px]">
+          <div className="pt-[190px] sm:pt-[210px] md:pt-[230px]">
             <PromotionalBanner />
             <FeaturesBar />
             <StorageBanner />
