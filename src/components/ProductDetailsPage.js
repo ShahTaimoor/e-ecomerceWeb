@@ -5,7 +5,7 @@ import Header from './Header';
 import Footer from './Footer';
 import ShoppingCart from './ShoppingCart';
 
-const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeCategory, isCartOpen, onCloseCart, onProductClick }) => {
+const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeCategory, isCartOpen, onCloseCart, onProductClick, onCheckout }) => {
   const dispatch = useDispatch();
   const [selectedImage, setSelectedImage] = useState(0);
   const [selectedHeadboard, setSelectedHeadboard] = useState('26" Strutted (Included)');
@@ -458,7 +458,7 @@ const ProductDetailsPage = ({ product, onClose, onCartClick, onNavClick, activeC
       <Footer />
 
       {/* Shopping Cart */}
-      <ShoppingCart isOpen={isCartOpen} onClose={onCloseCart} />
+      <ShoppingCart isOpen={isCartOpen} onClose={onCloseCart} onCheckout={onCheckout} />
     </div>
   );
 };

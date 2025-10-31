@@ -14,12 +14,14 @@ import Footer from './components/Footer';
 import ShoppingCart from './components/ShoppingCart';
 import ProductsPage from './components/ProductsPage';
 import ProductDetailsPage from './components/ProductDetailsPage';
+import SuccessPage from './components/SuccessPage';
 
 function App() {
   const [isCartOpen, setIsCartOpen] = useState(false);
   const [showProducts, setShowProducts] = useState(false);
   const [activeCategory, setActiveCategory] = useState(null);
   const [selectedProduct, setSelectedProduct] = useState(null);
+  const [showSuccessPage, setShowSuccessPage] = useState(false);
 
   useEffect(() => {
     if (isCartOpen) {
@@ -59,9 +61,24 @@ function App() {
     setSelectedProduct(product);
   };
 
+  const handleCheckout = () => {
+    console.log('handleCheckout called');
+    setIsCartOpen(false);
+    setShowSuccessPage(true);
+  };
+
+  const handleBackFromSuccess = () => {
+    setShowSuccessPage(false);
+    setActiveCategory(null);
+    setShowProducts(false);
+    setSelectedProduct(null);
+  };
+
   return (
     <Provider store={store}>
-      {selectedProduct ? (
+      {showSuccessPage ? (
+        <SuccessPage onClose={handleBackFromSuccess} redirectTo={handleBackFromSuccess} />
+      ) : selectedProduct ? (
         <ProductDetailsPage 
           product={selectedProduct}
           onClose={handleBackToHome}
@@ -71,6 +88,7 @@ function App() {
           isCartOpen={isCartOpen}
           onCloseCart={handleCloseCart}
           onProductClick={handleProductClick}
+          onCheckout={handleCheckout}
         />
       ) : showProducts ? (
         <ProductsPage 
@@ -82,6 +100,7 @@ function App() {
           isCartOpen={isCartOpen}
           onCloseCart={handleCloseCart}
           onProductClick={handleProductClick}
+          onCheckout={handleCheckout}
         />
       ) : (
         <div className="min-h-screen bg-gray-50">
@@ -103,7 +122,7 @@ function App() {
             <Testimonials />
           </div>
           <Footer />
-          <ShoppingCart isOpen={isCartOpen} onClose={handleCloseCart} />
+          <ShoppingCart isOpen={isCartOpen} onClose={handleCloseCart} onCheckout={handleCheckout} />
         </div>
       )}
     </Provider>

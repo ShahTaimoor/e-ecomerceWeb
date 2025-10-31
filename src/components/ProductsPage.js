@@ -7,7 +7,7 @@ import Header from './Header';
 import ShoppingCart from './ShoppingCart';
 import Footer from './Footer';
 
-const ProductsPage = ({ isOpen, onClose, category, onNavClick, onCartClick, activeCategory, isCartOpen, onCloseCart, onProductClick }) => {
+const ProductsPage = ({ isOpen, onClose, category, onNavClick, onCartClick, activeCategory, isCartOpen, onCloseCart, onProductClick, onCheckout }) => {
   const dispatch = useDispatch();
   const { data: products = [], isLoading, isError } = useProducts(activeCategory || null);
   const { data: categories = [] } = useCategories();
@@ -408,7 +408,7 @@ const ProductsPage = ({ isOpen, onClose, category, onNavClick, onCartClick, acti
       <Footer />
       
       {/* Shopping Cart */}
-      <ShoppingCart isOpen={isCartOpen} onClose={onCloseCart} />
+      <ShoppingCart isOpen={isCartOpen} onClose={onCloseCart} onCheckout={onCheckout} />
     </div>
   );
 };

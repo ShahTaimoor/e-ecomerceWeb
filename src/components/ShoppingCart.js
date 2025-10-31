@@ -2,10 +2,22 @@ import React, { useState } from 'react';
 import { useSelector, useDispatch } from 'react-redux';
 import { removeFromCart, updateQuantity } from '../store/cartSlice';
 
-const ShoppingCart = ({ isOpen, onClose }) => {
+const ShoppingCart = ({ isOpen, onClose, onCheckout }) => {
   const dispatch = useDispatch();
   const { items, total, itemCount } = useSelector((state) => state.cart);
   const [discountCode, setDiscountCode] = useState('');
+
+  const handleCheckoutClick = () => {
+    console.log('Checkout clicked', { items: items.length, onCheckout: !!onCheckout });
+    if (items.length > 0) {
+      if (onCheckout) {
+        onCheckout();
+      }
+      if (onClose) {
+        onClose();
+      }
+    }
+  };
 
   const handleQuantityChange = (index, delta) => {
     const currentItem = items[index];
@@ -187,11 +199,13 @@ const ShoppingCart = ({ isOpen, onClose }) => {
         {/* Action Buttons */}
         <div className="p-4 sm:p-6 space-y-4 flex-shrink-0">
           <button 
+            type="button"
             disabled={items.length === 0}
+            onClick={handleCheckoutClick}
             className={`w-full font-bold py-3 sm:py-4 rounded-lg transition-colors uppercase text-base sm:text-lg ${
               items.length === 0 
                 ? 'bg-gray-400 cursor-not-allowed' 
-                : 'bg-green-600 hover:bg-green-700'
+                : 'bg-green-600 hover:bg-green-700 cursor-pointer'
             } text-white`}
           >
             CHECKOUT NOW
