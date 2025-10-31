@@ -1,0 +1,6 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 100 100">
+  <circle cx="50" cy="50" r="48" fill="#000000" stroke="#FCD34D" stroke-width="2"/>
+  <text x="50" y="72" font-family="Arial, sans-serif" font-size="45" font-weight="bold" text-anchor="middle" fill="#FCD34D">
+    <tspan font-size="56">O</tspan>BS
+  </text>
+</svg>

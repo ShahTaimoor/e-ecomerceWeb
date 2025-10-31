@@ -127,7 +127,22 @@ const Header = ({ onCartClick, onNavClick, activeCategory, onProductClick, onSea
               onGoHome && onGoHome();
               setShowMobileMenu(false);
             }}>
-              <div className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-black border-2 border-yellow-400 flex items-center justify-center hover:opacity-90 transition-opacity">
+              <img 
+                src="/images/logo.png" 
+                alt="OBS Furniture Shop Logo" 
+                className="w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 object-contain hover:opacity-90 transition-opacity"
+                onError={(e) => {
+                  // Hide image and show fallback text logo if image not found
+                  const img = e.target;
+                  img.style.display = 'none';
+                  const fallback = img.parentElement.querySelector('.logo-fallback');
+                  if (fallback) {
+                    fallback.classList.remove('hidden');
+                    fallback.classList.add('flex');
+                  }
+                }}
+              />
+              <div className="logo-fallback hidden w-12 h-12 sm:w-16 sm:h-16 md:w-20 md:h-20 rounded-full bg-black border-2 border-yellow-400 items-center justify-center">
                 <span className="text-xl sm:text-2xl md:text-3xl font-bold text-yellow-400">
                   <span className="text-2xl sm:text-3xl md:text-4xl">O</span>BS
                 </span>
